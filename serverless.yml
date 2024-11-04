@@ -1,0 +1,70 @@
+service: mc-control
+
+frameworkVersion: '4'
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: eu-west-1
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - ec2:DescribeInstanceStatus
+            - ec2:StartInstances
+            - ec2:StopInstances
+          Resource: '*'
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:PutItem
+          Resource: !GetAtt ServerActivityTable.Arn
+
+functions:
+  mcc:
+    handler: src/handler.default
+    url:
+      cors: true
+    environment:
+      INSTANCE_ID: '${env:INSTANCE_ID}'
+      RESTRICTED_EMAILS: '${env:RESTRICTED_EMAILS}'
+      SERVER_ACTIVITY_TABLE: mc-control-${sls:stage}-activity
+
+resources:
+  Resources:
+    SiteBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: '${env:SITE_BUCKET_NAME}'
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+        OwnershipControls:
+          Rules:
+            - ObjectOwnership: ObjectWriter
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: error.html
+
+    ServerActivityTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: mc-control-${sls:stage}-activity
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: cat
+            AttributeType: N
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: cat
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        TimeToLiveSpecification:
+            AttributeName: ttl
+            Enabled: true
+  Outputs:
+    SiteBucketOutputKey:
+      Value: !Ref SiteBucket

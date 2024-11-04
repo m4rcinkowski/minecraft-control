@@ -1,0 +1,35 @@
+{
+  "accessDenied": "Brak dostępu",
+  "status": {
+    "name": {
+      "stopped": "Wyłączony",
+      "running": "Włączony",
+      "pending": "Uruchamianie",
+      "stopping": "Zatrzymywanie"
+    },
+    "playersCount": "{{count}} graczy",
+    "playersCount_one": "{{count}} gracz",
+    "playersCount_zero": "{{count}} graczy",
+    "authored": {
+      "stopping": "Wyłączony przez: {{author}}",
+      "stopped": "Wyłączony przez: {{author}}",
+      "pending": "Włączony przez: {{author}}",
+      "running": "Włączony przez: {{author}}"
+    }
+  },
+  "stopCountdown": {
+    "title": "Serwer wyłączy się sam za",
+    "ended": "w każdej chwili!"
+  },
+  "challenge": {
+    "generic": {
+      "confirmStarting": "Czy na pewno chcesz URUCHOMIĆ serwer?",
+      "confirmStopping": "Czy na pewno chcesz WYŁĄCZYĆ serwer?",
+      "peoplePlaying": "Na serwerze gra {{count}} osób",
+      "peoplePlaying_one": "Na serwerze gra {{count}} osoba"
+    },
+    "slider": {
+      "confirmStarting": "Przesuń, żeby URUCHOMIĆ serwer"
+    }
+  }
+}
