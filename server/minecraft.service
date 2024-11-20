@@ -1,0 +1,18 @@
+# Put this file in /etc/systemd/system/minecraft.service
+# Run and enable the service with `sudo systemctl start minecraft` and `sudo systemctl enable minecraft`
+# Inspect the logs with `journalctl -u minecraft -f`
+
+[Service]
+User=ec2-user
+Nice=5
+KillMode=none
+SuccessExitStatus=0 1
+NoNewPrivileges=true
+WorkingDirectory=/home/ec2-user/mcserver
+ReadWriteDirectories=/home/ec2-user/mcserver
+
+ExecStart=/usr/bin/java -Xms1024M -Xmx2048M -jar /home/ec2-user/mcserver/server.jar nogui
+ExecStop=/bin/kill -SIGTERM $MAINPID
+
+[Install]
+WantedBy=multi-user.target
