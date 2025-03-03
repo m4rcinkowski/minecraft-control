@@ -19,5 +19,6 @@
     "google-auth-library": "^9.15.0",
     "jwt-decode": "^4.0.0",
     "luxon": "^3.5.0"
-  }
+  },
+  "version": "1.0.0"
 }
