@@ -31,6 +31,8 @@ functions:
       INSTANCE_ID: '${env:INSTANCE_ID}'
       RESTRICTED_EMAILS: '${env:RESTRICTED_EMAILS}'
       SERVER_ACTIVITY_TABLE: mc-control-${sls:stage}-activity
+      GOOGLE_CLIENT_ID: '${env:GOOGLE_CLIENT_ID}'
+      GOOGLE_CLIENT_SECRET: '${env:GOOGLE_CLIENT_SECRET}'
 
 resources:
   Resources:

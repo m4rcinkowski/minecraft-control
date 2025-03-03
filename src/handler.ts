@@ -5,13 +5,13 @@ import {
   StopInstancesCommand,
 } from '@aws-sdk/client-ec2';
 import { jwtDecode } from 'jwt-decode';
-import { addActivityItem, getStatusActivity } from './model/activity';
 import { DateTime } from 'luxon';
 
-const ec2 = new EC2Client();
+import { addActivityItem, getStatusActivity } from './model/activity';
+import auth from './mw/auth';
 
+const ec2 = new EC2Client();
 const instanceId = process.env['INSTANCE_ID'];
-const restrictedEmails = process.env['RESTRICTED_EMAILS']?.split(',') ?? [];
 
 export const getStatus = async () => {
   const [ec2Data, activityData] = await Promise.all([
@@ -62,6 +62,7 @@ type TokenPayload = { email: string; given_name: string };
 
 export default async (event: AWSLambda.APIGatewayProxyEvent) => {
   let actionMethod;
+  const resHeaders = {};
 
   switch (event.queryStringParameters?.['action']) {
     case 'start':
@@ -74,37 +75,43 @@ export default async (event: AWSLambda.APIGatewayProxyEvent) => {
       actionMethod = getStatus;
   }
 
-  let userEmail;
-  let tokenPayload;
+  const ctx = {
+    request: { headers: { authorization: event.headers?.authorization } },
+    status: 200,
+    body: '',
+    set: (key, value) => {
+      resHeaders[key] = value;
+    },
+  };
 
   try {
-    tokenPayload = jwtDecode<TokenPayload>(event.headers?.authorization);
-    userEmail = event.headers?.authorization && tokenPayload?.email;
+    await auth(ctx, () => Promise.resolve());
   } catch (e) {
-    console.log('Failed to decode JWT', {
-      e,
-      token: event.headers?.authorization?.slice(0, 20),
-    });
+    console.log('My new middleware failed :-(', e);
+    resHeaders['middleware'] = JSON.stringify(e);
   }
 
-  if (!userEmail || !restrictedEmails.includes(userEmail)) {
+  if (ctx.status !== 200) {
     return {
-      statusCode: 401,
-      error: 'Unauthorized',
+      statusCode: ctx.status,
+      error: ctx.body,
+      headers: resHeaders,
     };
   }
 
   try {
-    const result = await actionMethod({ tokenPayload });
+    const result = await actionMethod(ctx);
 
     return {
       statusCode: 200,
       body: JSON.stringify(result),
+      headers: resHeaders,
     };
   } catch (error) {
     return {
       statusCode: 500,
       error: error.message,
+      headers: resHeaders,
     };
   }
 };

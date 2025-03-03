@@ -16,6 +16,7 @@
     "typescript-eslint": "^8.13.0"
   },
   "dependencies": {
+    "google-auth-library": "^9.15.0",
     "jwt-decode": "^4.0.0",
     "luxon": "^3.5.0"
   }

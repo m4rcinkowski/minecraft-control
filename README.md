@@ -55,6 +55,18 @@ Which should result in response similar to the following:
 
 ### Local development
 
+```
+# authenticate with aws, e.g.: aws sso login --profile MY_PROFILE
+
+# deploy backend with:
+npx serverless deploy
+
+# deploy frontend with:
+npm run build --prefix ui
+aws s3 cp ui/dist s3://my.domain/ --recursive --acl public-read
+```
+
+
 The easiest way to develop and test your function is to use the Serverless Framework's `dev` command:
 
 ```

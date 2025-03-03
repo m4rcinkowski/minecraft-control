@@ -27,6 +27,7 @@ const App = () => {
 
   if (authToken) {
     const userEmail = jwtDecode<{ email: string }>(authToken)?.email;
+    console.log({ userEmail });
 
     if (!userEmail || !restrictedEmails.includes(userEmail)) {
       return <h1>{t('accessDenied')}</h1>;
